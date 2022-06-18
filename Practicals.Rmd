@@ -1,7 +1,7 @@
 ---
 title: "Practicals"
 author: "Lorène Jimenez"
-date: "25/05/2022"
+date: "(`r format(Sys.time(), '%d %B, %Y')`)"
 output: html_document
 ---
 
@@ -9,32 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-
 # Weekly practical 1
-### Lorène Jimenez
+Lorène Jimenez, spring 2022
 
-# Master thesis in Budongo
+## Master thesis in Budongo
 
 ## Introduction
 1. State of the art
@@ -53,22 +31,34 @@ Is direct negative reciprocity used to induce cooperative behavior in food-shari
 
 ## Methods
 ### *Step 1*
-Data collection will occur in Budongo Conservation Field Station. It will last 6 months, from August 2022 to February 2023. 
+Data collection will occur in **Budongo Conservation Field Station**. It will last 6 months, from August 2022 to February 2023. 
 
 ### *Step 2*
 I will write my thesis during the second semester of my second year, spring 2023. 
 
+![](https://media.istockphoto.com/photos/chimpanzee-sitting-in-a-tree-wildlife-shot-gombetanzania-picture-id1320018407?b=1&k=20&m=1320018407&s=170667a&w=0&h=q0Ap73ONQHJO2owq8sZE0zuW9dZHgQDGagewXDgsy08=)
 
-git config --global user.email "lorene.jimenez@unine.ch"
-git config --global user.name "lorenejimenez"
+Here is a table for a preloaded dataset in r: 
+
+```{r HairEyeColor}
+library(knitr)
+kable(HairEyeColor)
+```
+
 
 
 
 # weekly practical 2
-## Exercice 1
+## Exercice 1: r preloaded dataset
 
-For this exercice, I have chosen to work with the preloaded data `chickwts` from R. This dataset describes the weight of chicken according to type of food they ate. 
+For this exercice, I have chosen to work with the preloaded data `chickwts` from R. This dataset describes the weight of chicken according to type of food they ate: 
 
+```{r}
+library(knitr)
+kable(chickwts)
+```
+
+Here is the structure of this dataset: 
 ```{r}
 data(chickwts)
 head(chickwts, 6)
@@ -83,14 +73,58 @@ weight is a numerical variable describing the weight of chickens.
 ### feed
 Feed is a factor variable describing the type of food ingested by chickens. There are 6 possibilities. 
 
-## Exercice 2
+## Exercice 2: dataset from an external source
+### first dataset
+For this exercise I have decided to use a dataset from a [pudding article](https://pudding.cool/2019/04/vogue/) about the skin tones of models in the cover of Vogue magazine. 
 
 ```{r}
 face <- read.csv("https://raw.githubusercontent.com/the-pudding/data/master/vogue/faces.csv")
+head(face, 6)
 str(face)
+```
+This dataset contains 4 variables. The first one, `date`, gives the date of the publication of the magazine. The second one, `model`, gives the name of the model on the cover. `tone` is the hex code for the skin color of each model. Finally, `l` represents the lightness of the skin tone for each model, converted to hsl format. The first variable is a date-type variable, `model` and `tone` are text variables and the last one is float variable. 
+
+###second data set
+This dataset also comes from a [pudding article](https://pudding.cool/2017/07/cetaceans/). 
+```{r}
+acquisitions <- read.csv("https://raw.githubusercontent.com/the-pudding/data/master/cetaceans/acquisitions.csv")
+head(acquisitions, 6)
+str(acquisitions)
+
+```
+This dataset contains 4 variables, all number variables in r. `AcqYear` gives the year the animal joined the community. `Born` gives the number of cetaceans that were born in captivity during a given year. `Capture` gives the number of cetaceans that were captures during a certain year. Finally, `rescue` gives the number of cetaceans that were rescued during a given year. 
+
+All variables are quantitative discrete variables. 
+
+
+
+# Weekly practical 3
+
+We will be using the `gapminder` data set from the `dslabs` package. 
+```{r}
+update.packages("rlang")
+library(dslabs)
+library(dplyr)
+library(knitr)
 ```
 
 
+```{r filter}
+gapminder2 <- gapminder %.%
+  filter(country %in% c("Switzerland","France"), year>=1980)
+```
+```{r}
+install.packages("rlang")
+library(rlang)
+```
 
 
+```{r}
+library(dslabs)
+data(murders)
+library(dplyr)
+library(tidyverse)
+library(knitr)
+murders %>% head() %>% kable()
+```
 
