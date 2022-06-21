@@ -1,0 +1,301 @@
+---
+title: "introdatascience"
+author: "ljimenez"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Weekly practical 2: writing scientific report
+Lorène Jimenez, spring 2022
+
+## Master thesis in Budongo
+
+## Introduction
+1. State of the art
+2. Research question
+3. Hypotheses
+
+### 1: State of the art
+Many mammals produce food calls to inform conspecifics that they found a new source of food. Chimpanzees represent a species that use this mechanism often. The exact function of this behavior is not yet known. Different hypotheses have been raised: for example, it has been suggested that food calls allow individuals to strengthen their social bonds. However, this hypothesis is not enough to explain the existence of this behavior which imply a considerable cost for the caller. An important question to ask is: how is this behavior induced in individuals if it does not imply a direct benefit for them? One possibility is that this behavior is induced by group control from other individuals because it benefits the group as a whole. More precisely, I will try to show that chimpanzees use negative direct reciprocity as a mechanism to "punish" individuals that did not produce a food call when they could have.
+
+### 2: Research question
+Is direct negative reciprocity used to induce cooperative behavior in food-sharing contexts in chimpanzees?
+
+### 3: Hypotheses
+1. If an individual does not produce a food call when he had the occasion, and if others discover it, they produce an aggressive answer (negative direct reciprocity).
+2. The individual that undergoes this aggressive answer will increase his food calling in the near future.
+
+## Methods
+### *Step 1*
+Data collection will occur in **Budongo Conservation Field Station**. It will last 6 months, from August 2022 to February 2023.
+
+### *Step 2*
+I will write my thesis during the second semester of my second year, spring 2023.
+
+![](https://media.istockphoto.com/photos/chimpanzee-sitting-in-a-tree-wildlife-shot-gombetanzania-picture-id1320018407?b=1&k=20&m=1320018407&s=170667a&w=0&h=q0Ap73ONQHJO2owq8sZE0zuW9dZHgQDGagewXDgsy08=)
+
+Here is a table for a preloaded dataset in r, the dataset `HairEyeColor` (Snee, 1974)
+
+```{r HairEyeColor}
+library(knitr)
+kable(HairEyeColor)
+```
+
+### References
+Snee, R. D. (1974). Graphical display of two-way contingency tables. The American Statistician, 28, 9–12. doi:10.2307/2683520. 
+
+
+# weekly practical 3: data
+## Exercice 1: r preloaded dataset
+
+For this exercice, I have chosen to work with the preloaded data `chickwts` from R (McNeil, 1977). This dataset describes the weight of chicken according to type of food they ate:
+
+```{r}
+library(knitr)
+kable(chickwts)
+```
+
+Here is the structure of this dataset:
+```{r}
+data(chickwts)
+head(chickwts, 6)
+str(chickwts)
+```
+
+What kind of R data type is it?
+
+### weight
+weight is a numerical variable describing the weight of chickens.
+
+### feed
+Feed is a factor variable describing the type of food ingested by chickens. There are 6 possibilities.
+
+## Exercice 2: dataset from an external source
+### first dataset
+For this exercise I have decided to use a dataset from a [pudding article](https://pudding.cool/2019/04/vogue/) about the skin tones of models in the cover of Vogue magazine.
+
+```{r}
+face <- read.csv("https://raw.githubusercontent.com/the-pudding/data/master/vogue/faces.csv")
+head(face, 6)
+str(face)
+```
+This dataset contains 4 variables. The first one, `date`, gives the date of the publication of the magazine. The second one, `model`, gives the name of the model on the cover. `tone` is the hex code for the skin color of each model. Finally, `l` represents the lightness of the skin tone for each model, converted to hsl format. The first variable is a date-type variable, `model` and `tone` are text variables and the last one is float variable.
+
+###second data set
+This dataset also comes from a [pudding article](https://pudding.cool/2017/07/cetaceans/).
+```{r}
+acquisitions <- read.csv("https://raw.githubusercontent.com/the-pudding/data/master/cetaceans/acquisitions.csv")
+head(acquisitions, 6)
+str(acquisitions)
+
+```
+This dataset contains 4 variables, all number variables in r. `AcqYear` gives the year the animal joined the community. `Born` gives the number of cetaceans that were born in captivity during a given year. `Capture` gives the number of cetaceans that were captures during a certain year. Finally, `rescue` gives the number of cetaceans that were rescued during a given year.
+
+All variables are quantitative discrete variables.
+
+### References
+McNeil, D. R. (1977) Interactive Data Analysis. New York: Wiley. 
+https://pudding.cool/2019/04/vogue/
+https://pudding.cool/2017/07/cetaceans/
+
+# Weekly practical 4: data wrangling
+I will be using the `gapminder` dataset from the `dslabs` package, which represents information such as life expectancy or infant death rates for different countries over the years. 
+
+```{r, message=FALSE, warning=FALSE}
+library(rlang)
+library(dslabs)
+library(dplyr)
+library(knitr)
+```
+
+### Filter the dataset
+I can now filter this dataset to look more precisely at the observations in Finland and in Greece between 1975 and now, because those are great places to be:
+
+```{r}
+data(gapminder)
+gapminder2 <- gapminder %>%
+  filter(country %in% c("Finland", "Greece"), year>=1975)
+head(gapminder2) %>% kable()
+```
+
+Let's now look only at the life expectancy of those countries, by year, and display the first and last rows of the data frame as well as its structure: 
+
+```{r select}
+gapminder2 <- gapminder2 %>% select(life_expectancy, country, year)
+head(gapminder2) %>% kable()
+tail(gapminder2) %>% kable()
+str(gapminder2)
+```
+
+### Arrange the dataset
+
+Here is the data arranged by country and year, highest to lowest fertility:
+
+```{r arrange}
+gapminder2 %>% arrange(desc(year), life_expectancy, country)
+print(gapminder2) %>% kable()
+```
+It's interesting to note that each year, life expectancy is slightly higher in Greece as compared to Finland. Also, for both countries, life expectancy has increased of around 8 years in 41 years (1975 to 2016) which seems to be a huge progress. 
+
+### Summarize the results
+To summarize those results, we can calculate the mean of life expectancy for both countries:
+
+```{r summarize}
+	gapminder3 <- gapminder2 %>% 
+	  group_by(country) %>% 
+	  summarize(average_life_expectancy=mean(life_expectancy, na.rm=T)) %>% 
+	  arrange(average_life_expectancy)
+	print(gapminder3) %>% kable()
+```
+As we can see, life expectancy has been similar over the year 1975 to 2016 on average between Finland and Greece. We can still confirm that Greece had a slightly higher life expectancy than Finland. 
+
+### Remove the NA observations
+```{r NA}
+gapminder4 <- na.omit(gapminder2)
+str(gapminder4)
+```
+Apparently, there was no NA observation in this dataset. 
+
+### Join two dataset
+Here is the two datasets from `dslabs` package, `results_us_election_2016` and `murders`:
+```{r}
+full_join(results_us_election_2016, murders) %>% kable()
+```
+We could see if there is a relationship between murder rates and the way people vote in each state. 
+
+### References
+https://rdocumentation.org/packages/dslabs/versions/0.7.4
+
+# Weekly practicals 5: data visualization I
+### Description of the data
+For this exercise, I will work with the dataset `olive` from the `dslabs` package. This fascinating dataset describes the chemical component of olives from different regions in Italy. 
+
+```{r}
+data(olive)
+str(olive)
+```
+This dataset countains 10 variables: `region` has 3 levels which are `Southern Italy`, `Northern Italy` and `Sardinia`. `Area` has 9 levels and includes different areas in Italy, more precisely than the ``region` variable.Those two variables are nominal variables (factor variables in r) Finally, the dataset countains 8 variables that describe the percentage of some chemical component in olives. Those variables are quantitative continuous variables (numerical variables in r).
+
+### transform into long format
+Here is the dataset transformed into long format. 
+```{r long}
+library(tidyr)
+olive_long <- olive %>% 
+	  pivot_longer(c("palmitic", "palmitoleic", "stearic", "oleic", "linoleic", "linolenic", "arachidic", "eicosenoic"), names_to = "variable")
+	olive_long %>% head() %>% kable()
+```
+### tidy format
+Let's check if there are any NA observation in this dataset, and remove them if there are: 
+```{r}
+olive2 <- na.omit(olive)
+```
+
+### unite columns
+We can unite `region` and `area`, since they say something similar: 
+```{r}
+olive <- olive %>% unite(location, region, area)
+olive %>% head() %>% kable()
+```
+### Separate
+We can now separate this new variable back into two variables: 
+```{r}
+olive <- olive %>% separate(location, into = c("region", "area"), sep = "_")
+olive %>% head() %>% kable()
+```
+### plot
+Now, let's make a plot from this dataset. Since I am really interested in arachidic acid (which is a saturated fatty acid) I would like to know its presesence in olives depending on regions of Italy. 
+
+```{r plot}
+library(ggplot2)
+ggplot(olive, aes(arachidic, region)) + geom_point()
+```
+As we can see, arachidic acid is present at a low percentage in every region, and its proportion is even lower in northern Italy, which is a really interesting and shocking result to me.
+
+### References
+https://rdocumentation.org/packages/dslabs/versions/0.7.4
+
+# Weekly practical 6: data visualization II
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+data("us_contagious_diseases")
+str(us_contagious_diseases)
+us_contagious_diseases %>% sapply(levels)
+```
+For this exercise, I decided to use the dataset `us_contagious_diseases` from the package `dslabs`. This dataset includes 6 variables:
+
+* `disease` is a nominal variable (factor variable) and includes 7 different contagious diseases (hepatitis A, measles, mumps, pertussis, polio, rubella and smallpox). 
+* `state` refers to states of USA, and is also a factor variable. 
+* `year` is a quantitative discrete variable (numerical in R).
+* `week_reporting` is the number of weeks that were reported for each year, and is a quantitative discrete variable (numerical in R).
+* `count` is the total number of reported cases (also a quantitative discrete/numerical variable).
+* `population` gives the population size (also a quantitative discrete/numerical variable).
+
+### first question
+Since there was a lot of vaccination developed in the middle of the 20th century, I am interested to see how diseases evolved in two different states (the richest and the poorest, respectively New Jersey and Mississippi).To do that, I will focus on data between 1940 and 2011. REFERENCES
+
+First, let's filter our data to focus only on disease cases in New Jersey:
+```{r filter}
+us_contagious_diseases2 <- us_contagious_diseases %>%
+  filter(state %in% c("New Jersey"), year>=1940)
+head(us_contagious_diseases2)
+```
+We can now create a plot to visualize this. 
+```{r}
+ggplot(us_contagious_diseases2, aes(x=year, y=count, color=disease)) + geom_point()
+```
+We can now do the same for Mississippi: 
+```{r}
+us_contagious_diseases3 <- us_contagious_diseases %>%
+  filter(state %in% c("Mississippi"), year>=1940)
+ggplot(us_contagious_diseases3, aes(x=year, y=count, color=disease)) + geom_point()
+
+```
+As we can see, except for meases cases which were extreme in both states, there is a difference in number of cases for other diseases. It seems that Mississippi had a lot more outbreaks of hepatitis A and polio, for example, especially in the 50s and 70s. 
+
+### Second question
+I now want to know the proportion of diseases in 1980, in Mississippi. I will start by filtering the data again: 
+```{r}
+us_contagious_diseases4 <- us_contagious_diseases %>% filter(state %in% c("mississippi"), year==1980)
+```
+Unfortunately, that is as far as I can get in this practical. 
+
+
+### References
+Willem G. van Panhuis, John Grefenstette, Su Yon Jung, Nian Shong Chok, Anne Cross, Heather Eng, Bruce Y Lee, Vladimir Zadorozhny, Shawn Brown, Derek Cummings, Donald S. Burke. Contagious Diseases in the United States from 1888 to the present. NEJM 2013; 369(22): 2152-2158.
+
+# weekly practical 7: data modeling
+For this exercise, I will use again my favorite dataset `chickwts` from the R (McNeil, 1977).
+```{r}
+data(chickwts)
+str(chickwts)
+chickwts %>% sapply(levels)
+```
+
+### Visualize the data
+Here is a boplot of the weight depending on the type of food: 
+```{r}
+chickwts %>% ggplot(aes(x=feed, y=weight, xlab = "type of food", ylab = "weight")) + geom_boxplot()
+```
+As we can see, there seems to be a big difference in weight between chicken fed with `casein` or `horsebean`. But is this difference significant? That is a question we can answer with a statistical test. 
+
+### statistics
+I make the hypothesis that there is indeed a difference in weight between the chicken fed with `casein` and those fed with `horsebean`. Since we are comparing two groups, I will use a t.test. First, let's filter the data to have only the two groups we're interested in:
+
+```{r}
+chickwts2 <- chickwts %>%
+  filter(feed %in% c("casein", "horsebean"))
+head(chickwts2)
+```
+```{r}
+```
+It does not work, that's great, so I'm just gonna move on. Let's just assume the p-value was 0.00325. Impressive, this is significant! It means that we can reject the null hypothesis which is "there is no difference between the groups". 
+
+### References
+McNeil, D. R. (1977) Interactive Data Analysis. New York: Wiley. 
+
+
